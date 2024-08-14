@@ -1,0 +1,13 @@
+services:
+
+  postgres-db:
+    image: postgres:13.8
+    restart: always
+    environment:
+      POSTGRES_USER: postgres-db
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_DB: wizard
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
