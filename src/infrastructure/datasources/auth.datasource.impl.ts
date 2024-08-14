@@ -79,7 +79,11 @@ export class AuthDatasourceImpl implements AuthDatasource {
 
     const emailTemplatePath: string = path.join(
       __dirname,
-      "../../utils/templates/reset-password.html"
+      "..",
+      "..",
+      "utils",
+      "templates",
+      "reset-password.html"
     );
 
     let emailTemplate: string = EmailService.loadTemplate(emailTemplatePath);
