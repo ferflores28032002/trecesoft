@@ -1,5 +1,3 @@
-import path from "path";
-
 import { BcryptAdapter, envs } from "../../config";
 import { JwtAdapter } from "../../config/jwt";
 
@@ -15,6 +13,7 @@ import {
 } from "../../domain";
 
 import { LoginUserDto } from "../../domain/dtos/auth/login-user.dto";
+import { generatePasswordRecoveryEmail } from "../../utils/templates/password-email.template";
 import { UserMapper } from "../mappers/user.mapper";
 
 type HashFunction = (password: string) => string;
@@ -77,19 +76,7 @@ export class AuthDatasourceImpl implements AuthDatasource {
 
     const token = await JwtAdapter.generateToken({ id: user.id }, "2h");
 
-    const emailTemplatePath: string = path.join(
-      __dirname,
-      "..",
-      "..",
-      "utils",
-      "templates",
-      "reset-password.html"
-    );
-
-    let emailTemplate: string = EmailService.loadTemplate(emailTemplatePath);
-
     const resetUrl = `${envs.URL_FRONTEND}?token=${token}`;
-    emailTemplate = emailTemplate.replace("{{resetUrl}}", resetUrl);
 
     const emailService = new EmailService();
 
@@ -97,13 +84,21 @@ export class AuthDatasourceImpl implements AuthDatasource {
       from: envs.SMTP_USER,
       to: [email],
       subject: "Recuperación de Contraseña",
-      html: emailTemplate,
+      html: generatePasswordRecoveryEmail(resetUrl),
     });
   }
 
   async update(updateUserDto: UpdateUserDto): Promise<string> {
-    const { id, name, email, username, roleId, password, newPassword } =
-      updateUserDto;
+    const {
+      id,
+      name,
+      email,
+      username,
+      roleId,
+      password,
+      newPassword,
+      is_active,
+    } = updateUserDto;
 
     try {
       const user = await UserModel.findByPk(id);
@@ -125,6 +120,8 @@ export class AuthDatasourceImpl implements AuthDatasource {
       if (email) user.email = email;
       if (username) user.username = username;
       if (roleId) user.roleId = roleId;
+      if (roleId) user.roleId = roleId;
+      if (is_active) user.is_active = is_active;
 
       await user.save();
       return "User updated successfully";

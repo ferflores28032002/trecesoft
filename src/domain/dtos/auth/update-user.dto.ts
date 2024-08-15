@@ -5,12 +5,13 @@ export class UpdateUserDto {
     public username: string,
     public email: string,
     public password: string,
+    public is_active: boolean,
     public newPassword: string,
     public roleId: number
   ) {}
 
   static update(object: { [key: string]: any }): [string?, UpdateUserDto?] {
-    const { name, email, password, username, roleId, id, newPassword } = object;
+    const { name, email, password, username, roleId, id, newPassword , is_active} = object;
 
     if (!id) return ["Missing id"];
 
@@ -22,6 +23,7 @@ export class UpdateUserDto {
         username,
         email,
         password,
+        is_active,
         newPassword,
         roleId
       ),
